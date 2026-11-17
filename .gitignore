@@ -1,0 +1,18 @@
+# Configuraci¢n interna de Eclipse
+.metadata/
+
+# Archivos generados
+*.class
+bin/
+
+# Configuraci¢n de otros IDE
+.idea/
+*.iml/
+
+# Maven y Gradle
+target/
+build/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
