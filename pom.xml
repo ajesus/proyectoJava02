@@ -18,7 +18,7 @@
 
     <dependencies>
 
-        <!-- Framework para pruebas unitarias -->
+        <!-- JUNIT -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -38,11 +38,16 @@
                 <version>3.13.0</version>
             </plugin>
 
-            <!-- PRUEBAS UNITARIAS -->
+            <!-- JUNIT -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <reportsDirectory>
+                        ${project.build.directory}/surefire-reports
+                    </reportsDirectory>
+                </configuration>
             </plugin>
 
             <!-- CHECKSTYLE -->
@@ -50,12 +55,34 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.6.0</version>
+
                 <configuration>
                     <configLocation>config/checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
+
+                    <!-- Informe XML -->
+                    <outputFile>
+                        ${project.build.directory}/checkstyle-result.xml
+                    </outputFile>
+                    <outputFileFormat>xml</outputFileFormat>
+
+                    <!-- Informe HTML -->
+                    <outputDirectory>
+                        ${project.build.directory}/site
+                    </outputDirectory>
                 </configuration>
+
                 <executions>
+
+                    <execution>
+                        <id>checkstyle-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                        </goals>
+                    </execution>
+
                     <execution>
                         <id>checkstyle-validation</id>
                         <phase>verify</phase>
@@ -63,6 +90,7 @@
                             <goal>check</goal>
                         </goals>
                     </execution>
+
                 </executions>
             </plugin>
 
@@ -71,11 +99,34 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.8.6.6</version>
+
                 <configuration>
                     <effort>Max</effort>
                     <threshold>High</threshold>
+
+                    <!-- Informes HTML y XML -->
+                    <htmlOutput>true</htmlOutput>
+                    <xmlOutput>true</xmlOutput>
+
+                    <outputDirectory>
+                        ${project.build.directory}/site/spotbugs
+                    </outputDirectory>
+
+                    <xmlOutputDirectory>
+                        ${project.build.directory}
+                    </xmlOutputDirectory>
                 </configuration>
+
                 <executions>
+
+                    <execution>
+                        <id>spotbugs-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>spotbugs</goal>
+                        </goals>
+                    </execution>
+
                     <execution>
                         <id>spotbugs-analysis</id>
                         <phase>verify</phase>
@@ -83,6 +134,7 @@
                             <goal>check</goal>
                         </goals>
                     </execution>
+
                 </executions>
             </plugin>
 
@@ -91,6 +143,7 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
+
                 <executions>
 
                     <execution>
@@ -106,6 +159,13 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <formats>
+                                <format>HTML</format>
+                                <format>XML</format>
+                                <format>CSV</format>
+                            </formats>
+                        </configuration>
                     </execution>
 
                 </executions>
