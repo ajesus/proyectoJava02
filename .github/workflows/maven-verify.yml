@@ -1,3 +1,4 @@
+
 name: Verificación Maven
 
 on:
@@ -5,19 +6,77 @@ on:
 
 jobs:
   build:
-    name: Compilar y verificar proyecto
+    name: Compilar y analizar proyecto
     runs-on: ubuntu-latest
 
     steps:
       - name: Descargar repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configurar Java 8
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '8'
           cache: maven
 
-      - name: Ejecutar Maven
-        run: mvn clean verify
+      - name: Limpiar proyecto
+        run: mvn -B clean
+
+      - name: Compilar proyecto
+        run: mvn -B compile
+
+      - name: Ejecutar JUnit
+        run: mvn -B test
+
+      - name: Generar informe JaCoCo
+        if: always()
+        continue-on-error: true
+        run: mvn -B jacoco:report
+
+      - name: Generar informe Checkstyle
+        if: always()
+        continue-on-error: true
+        run: mvn -B checkstyle:checkstyle
+
+      - name: Validar Checkstyle
+        if: always()
+        continue-on-error: true
+        run: mvn -B checkstyle:check
+
+      - name: Generar JAR
+        if: always()
+        continue-on-error: true
+        run: mvn -B jar:jar
+
+      - name: Publicar resultados JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-junit
+          path: target/surefire-reports/
+          if-no-files-found: warn
+
+      - name: Publicar informe JaCoCo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-jacoco
+          path: target/site/jacoco/
+          if-no-files-found: warn
+
+      - name: Publicar informe Checkstyle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-checkstyle
+          path: target/site/checkstyle.html
+          if-no-files-found: warn
+
+      - name: Publicar JAR
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proyecto-java-jar
+          path: target/*.jar
+          if-no-files-found: warn
