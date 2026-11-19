@@ -154,6 +154,14 @@ jobs:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: mvn -B org.owasp:dependency-check-maven:13.0.0:check -DnvdApiKeyEnvironmentVariable=NVD_API_KEY
 
+      # GENERAR SBOM CON CYCLONEDX
+      - name: Generar SBOM con CycloneDX
+        if: always()
+        continue-on-error: true
+        run: mvn -B org.cyclonedx:cyclonedx-maven-plugin:2.9.3:makeBom -DoutputFormat=json,xml -DoutputName=bom
+
+
+
       # PUBLICAR JUNIT
       - name: Publicar resultados JUnit
         if: always()
@@ -204,16 +212,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: informe-owasp-dependency-check
-          path: target/dependency-check-report.*
-          if-no-files-found: warn
-          retention-days: 30
-
-      # PUBLICAR INFORME OWASP
-      - name: Publicar informe OWASP Dependency-Check
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: informe-owasp-dependency-check
           path: target/dependency-check-report.html
           if-no-files-found: warn
           retention-days: 30
@@ -225,6 +223,18 @@ jobs:
         with:
           name: proyecto-java-jar
           path: target/*.jar
+          if-no-files-found: warn
+          retention-days: 30
+
+      # PUBLICAR SBOM CYCLONEDX
+      - name: Publicar SBOM CycloneDX
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: |
+            target/bom.json
+            target/bom.xml
           if-no-files-found: warn
           retention-days: 30
 
