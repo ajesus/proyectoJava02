@@ -31,11 +31,9 @@ jobs:
       - name: Analizar código con Semgrep
         if: always()
         continue-on-error: true
-        run: |
-          docker run --rm \
-            -v "$GITHUB_WORKSPACE:/src" \
-            semgrep/semgrep \
-            semgrep scan --config auto /src
+        uses: docker://semgrep/semgrep
+        with:
+          args: semgrep scan --config auto
 
       # INICIALIZAR CODEQL
       - name: Inicializar CodeQL
