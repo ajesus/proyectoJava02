@@ -27,6 +27,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # ANALIZAR CODIGO CON SEMGREP
+      - name: Analizar código con Semgrep
+        if: always()
+        continue-on-error: true
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/src" \
+            semgrep/semgrep \
+            semgrep scan --config auto /src
+
       # INICIALIZAR CODEQL
       - name: Inicializar CodeQL
         uses: github/codeql-action/init@v4
