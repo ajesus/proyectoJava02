@@ -21,6 +21,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      # ANALIZAR SECRETOS CON GITLEAKS
+      - name: Analizar secretos con Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # INICIALIZAR CODEQL
       - name: Inicializar CodeQL
         uses: github/codeql-action/init@v4
