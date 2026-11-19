@@ -4,9 +4,12 @@ on:
   workflow_dispatch:
 
 permissions:
-      contents: read
-      security-events: write
-      id-token: write
+  contents: read
+  security-events: write
+  actions: read
+  id-token: write
+  attestations: write
+
 
 jobs:
   build:
@@ -83,11 +86,34 @@ jobs:
         continue-on-error: true
         run: mvn -B jacoco:prepare-agent test
 
+      # EJECUTAR PRUEBAS DE INTEGRACION CON FAILSAFE
+      - name: Ejecutar pruebas de integración con Failsafe
+        if: always()
+        continue-on-error: true
+        run: mvn -B failsafe:integration-test failsafe:verify
+
       # GENERAR INFORME JACOCO
       - name: Generar informe JaCoCo
         if: always()
         continue-on-error: true
         run: mvn -B jacoco:report
+        
+      # ANALIZAR EFICACIA DE TESTS CON PIT
+      - name: Analizar pruebas con PIT Mutation Testing
+        if: always()
+        continue-on-error: true
+        run: mvn -B org.pitest:pitest-maven:mutationCoverage
+
+      # ANALIZAR EFICACIA DE TESTS CON PIT
+      - name: Analizar pruebas con PIT Mutation Testing
+        if: always()
+        continue-on-error: true
+        run: |
+          mvn -B org.pitest:pitest-maven:mutationCoverage \
+            -DtargetClasses=TU_PAQUETE.* \
+            -DtargetTests=TU_PAQUETE.* \
+            -Dthreads=2 \
+            -DoutputFormats=HTML,XML
 
       # GENERAR INFORME CHECKSTYLE
       - name: Generar informe Checkstyle
@@ -126,6 +152,13 @@ jobs:
         if: always()
         continue-on-error: true
         run: mvn -B jar:jar
+
+      # GENERAR ATTESTATION DEL JAR
+      - name: Generar Artifact Attestation
+        if: always() && hashFiles('target/*.jar') != ''
+        uses: actions/attest@v4
+        with:
+          subject-path: target/*.jar
 
       # CONFIGURAR JAVA 17 PARA SONARQUBE
       - name: Configurar Java 17 para SonarQube
@@ -174,13 +207,15 @@ jobs:
           fail_action: false
           artifact_name: informe-zap
 
-      # PUBLICAR JUNIT
-      - name: Publicar resultados JUnit
+      # PUBLICAR JUNIT Y FAILSAFE
+      - name: Publicar resultados JUnit y Failsafe
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: resultados-junit
-          path: target/surefire-reports/
+          name: resultados-junit-failsafe
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
           if-no-files-found: warn
           retention-days: 30
 
@@ -191,6 +226,16 @@ jobs:
         with:
           name: informe-jacoco
           path: target/site/jacoco/
+          if-no-files-found: warn
+          retention-days: 30
+
+      # PUBLICAR INFORME PIT
+      - name: Publicar informe PIT Mutation Testing
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-pit-mutation-testing
+          path: target/pit-reports/
           if-no-files-found: warn
           retention-days: 30
 
@@ -257,6 +302,16 @@ jobs:
         with:
           name: registro-maven
           path: target/
+          if-no-files-found: warn
+          retention-days: 30
+
+      # PUBLICAR INFORME PIT
+      - name: Publicar informe PIT Mutation Testing
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-pit
+          path: target/pit-reports/
           if-no-files-found: warn
           retention-days: 30
 

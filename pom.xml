@@ -26,6 +26,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit4</artifactId>
+            <version>1.4.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -135,8 +142,42 @@
                 </configuration>
             </plugin>
 
+        <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <version>1.17.4</version>
+            <configuration>
+                <targetClasses>
+                    <param>com.proyecto.*</param>
+                </targetClasses>
+                <targetTests>
+                    <param>com.proyecto.*</param>
+                </targetTests>
+                <threads>2</threads>
+                <outputFormats>
+                    <param>HTML</param>
+                    <param>XML</param>
+                </outputFormats>
+            </configuration>
+        </plugin>
+
+        <!-- MAVEN FAILSAFE: PRUEBAS DE INTEGRACION -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>3.5.4</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>integration-test</goal>
+                        <goal>verify</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 
         </plugins>
+        
     </build>
 
 </project>
