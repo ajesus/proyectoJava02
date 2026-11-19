@@ -35,6 +35,18 @@ jobs:
         with:
           args: semgrep scan --config auto
 
+      # ANALIZAR SEGURIDAD CON TRIVY
+      - name: Analizar proyecto con Trivy
+        if: always()
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          scanners: 'vuln,misconfig,secret'
+          format: 'table'
+          exit-code: '0'
+
       # INICIALIZAR CODEQL
       - name: Inicializar CodeQL
         uses: github/codeql-action/init@v4
