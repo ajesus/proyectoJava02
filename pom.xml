@@ -105,6 +105,37 @@
                 <version>0.8.12</version>
             </plugin>
 
+
+            <!-- OWASP DEPENDENCY-CHECK -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>13.0.0</version>
+
+                <configuration>
+                    <!-- Informes HTML y XML -->
+                    <formats>
+                        <format>HTML</format>
+                        <format>XML</format>
+                    </formats>
+
+                    <outputDirectory>
+                        ${project.build.directory}/dependency-check
+                    </outputDirectory>
+
+                    <!-- Durante las pruebas, informar sin bloquear -->
+                    <failBuildOnCVSS>11</failBuildOnCVSS>
+
+                    <!-- Variable de entorno para la API de NVD -->
+                    <nvdApiKeyEnvironmentVariable>
+                        NVD_API_KEY
+                    </nvdApiKeyEnvironmentVariable>
+
+                    <failOnError>true</failOnError>
+                </configuration>
+            </plugin>
+
+
         </plugins>
     </build>
 
