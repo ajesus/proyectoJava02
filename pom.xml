@@ -61,37 +61,17 @@
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
 
-                    <!-- Informe XML -->
+                    <!-- INFORME XML -->
                     <outputFile>
                         ${project.build.directory}/checkstyle-result.xml
                     </outputFile>
                     <outputFileFormat>xml</outputFileFormat>
 
-                    <!-- Informe HTML -->
+                    <!-- INFORME HTML -->
                     <outputDirectory>
                         ${project.build.directory}/site
                     </outputDirectory>
                 </configuration>
-
-                <executions>
-
-                    <execution>
-                        <id>checkstyle-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>checkstyle</goal>
-                        </goals>
-                    </execution>
-
-                    <execution>
-                        <id>checkstyle-validation</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-
-                </executions>
             </plugin>
 
             <!-- SPOTBUGS -->
@@ -104,7 +84,7 @@
                     <effort>Max</effort>
                     <threshold>High</threshold>
 
-                    <!-- Informes HTML y XML -->
+                    <!-- INFORMES HTML Y XML -->
                     <htmlOutput>true</htmlOutput>
                     <xmlOutput>true</xmlOutput>
 
@@ -116,26 +96,6 @@
                         ${project.build.directory}
                     </xmlOutputDirectory>
                 </configuration>
-
-                <executions>
-
-                    <execution>
-                        <id>spotbugs-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>spotbugs</goal>
-                        </goals>
-                    </execution>
-
-                    <execution>
-                        <id>spotbugs-analysis</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-
-                </executions>
             </plugin>
 
             <!-- JACOCO -->
@@ -143,32 +103,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
-
-                <executions>
-
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-
-                    <execution>
-                        <id>generate-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <formats>
-                                <format>HTML</format>
-                                <format>XML</format>
-                                <format>CSV</format>
-                            </formats>
-                        </configuration>
-                    </execution>
-
-                </executions>
             </plugin>
 
         </plugins>

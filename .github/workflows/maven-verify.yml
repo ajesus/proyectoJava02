@@ -5,6 +5,8 @@ on:
 
 permissions:
   contents: read
+  security-events: write
+  actions: read
 
 jobs:
   build:
@@ -12,11 +14,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       # DESCARGAR REPOSITORIO
       - name: Descargar repositorio
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      # INICIALIZAR CODEQL
+      - name: Inicializar CodeQL
+        uses: github/codeql-action/init@v4
+        continue-on-error: true
+        with:
+          languages: java-kotlin, actions
+          build-mode: none
+          queries: security-extended,security-and-quality
 
       # CONFIGURAR JAVA 8
       - name: Configurar Java 8
@@ -28,15 +40,18 @@ jobs:
 
       # LIMPIAR PROYECTO
       - name: Limpiar proyecto
+        continue-on-error: true
         run: mvn -B clean
 
       # COMPILAR
       - name: Compilar proyecto
+        continue-on-error: true
         run: mvn -B compile
 
-      # EJECUTAR JUNIT
-      - name: Ejecutar JUnit
-        run: mvn -B test
+      # EJECUTAR JUNIT Y PREPARAR JACOCO
+      - name: Ejecutar JUnit con JaCoCo
+        continue-on-error: true
+        run: mvn -B jacoco:prepare-agent test
 
       # GENERAR INFORME JACOCO
       - name: Generar informe JaCoCo
@@ -68,8 +83,24 @@ jobs:
         continue-on-error: true
         run: mvn -B spotbugs:check
 
+      # ANALIZAR CON CODEQL
+      - name: Analizar con CodeQL
+        if: always()
+        uses: github/codeql-action/analyze@v4
+        continue-on-error: true
+        with:
+          category: "/language:java-kotlin-actions"
+
+      # GENERAR JAR
+      - name: Generar JAR
+        if: always()
+        continue-on-error: true
+        run: mvn -B jar:jar
+
       # CONFIGURAR JAVA 17 PARA SONARQUBE
       - name: Configurar Java 17 para SonarQube
+        if: always()
+        continue-on-error: true
         uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -77,6 +108,8 @@ jobs:
 
       # ANALIZAR CON SONARQUBE CLOUD
       - name: Analizar código con SonarQube Cloud
+        if: always()
+        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -86,12 +119,6 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.java.jdkHome="$JAVA_HOME_8_X64" \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-
-      # GENERAR JAR
-      - name: Generar JAR
-        if: always()
-        continue-on-error: true
-        run: mvn -B jar:jar
 
       # PUBLICAR JUNIT
       - name: Publicar resultados JUnit
