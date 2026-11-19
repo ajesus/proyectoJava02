@@ -4,17 +4,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  security-events: write
-  actions: read
+      contents: read
+      security-events: write
+      id-token: write
 
 jobs:
   build:
     name: Compilar y analizar proyecto
     runs-on: ubuntu-latest
 
-    steps:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
 
+    steps:
       # DESCARGAR REPOSITORIO
       - name: Descargar repositorio
         uses: actions/checkout@v5
@@ -160,7 +164,15 @@ jobs:
         continue-on-error: true
         run: mvn -B org.cyclonedx:cyclonedx-maven-plugin:2.9.3:makeBom -DoutputFormat=json,xml -DoutputName=bom
 
-
+      # ANALIZAR FUTURA APLICACION WEB CON OWASP ZAP
+      - name: Analizar aplicación web con OWASP ZAP
+        if: ${{ vars.ZAP_TARGET != '' }}
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          target: ${{ vars.ZAP_TARGET }}
+          allow_issue_writing: false
+          fail_action: false
+          artifact_name: informe-zap
 
       # PUBLICAR JUNIT
       - name: Publicar resultados JUnit
@@ -247,3 +259,39 @@ jobs:
           path: target/
           if-no-files-found: warn
           retention-days: 30
+
+  scorecard:
+    name: Analizar seguridad con OpenSSF Scorecard
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Ejecutar OpenSSF Scorecard
+        uses: ossf/scorecard-action@v2.5.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: false
+
+      - name: Publicar resultados SARIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-openssf-scorecard
+          path: results.sarif
+          retention-days: 5
+
+      - name: Publicar resultados en GitHub Security
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: results.sarif
