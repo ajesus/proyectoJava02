@@ -4,8 +4,7 @@ public class main {
         System.out.println("Hola mundo");
 
         int numero = 10;
-        System.out.println(numero);
-        System.out.println(numero);
+        System.out.println(numero + "aaa");        
     }
 
 }
