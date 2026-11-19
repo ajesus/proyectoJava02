@@ -1,6 +1,6 @@
 
 
-name: Verificación Maven V07
+name: Verificación Maven
 
 on:
   workflow_dispatch:
