@@ -5,6 +5,7 @@ public class main {
 
         int numero = 10;
         System.out.println(numero);
+        System.out.println(numero);
     }
 
 }
