@@ -1,8 +1,12 @@
 
-name: Verificación Maven V03
+
+name: Verificación Maven V04
 
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -13,8 +17,10 @@ jobs:
       # DESCARGAR REPOSITORIO
       - name: Descargar repositorio
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
-      # CONFIGURAR JAVA
+      # CONFIGURAR JAVA 8
       - name: Configurar Java 8
         uses: actions/setup-java@v5
         with:
@@ -63,6 +69,25 @@ jobs:
         if: always()
         continue-on-error: true
         run: mvn -B spotbugs:check
+
+      # CONFIGURAR JAVA 17 PARA SONARQUBE
+      - name: Configurar Java 17 para SonarQube
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # ANALIZAR CON SONARQUBE CLOUD
+      - name: Analizar código con SonarQube Cloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar \
+            -Dsonar.projectKey=ajesus_proyectoJava02 \
+            -Dsonar.organization=ajesus \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.java.jdkHome="$JAVA_HOME_8_X64" \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
       # GENERAR JAR
       - name: Generar JAR
