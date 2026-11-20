@@ -82,7 +82,7 @@ jobs:
       # PUBLICAR INFORME SEMGREP
       - name: Publicar informe Semgrep
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-semgrep
           path: security-reports/semgrep/semgrep.json
@@ -258,7 +258,7 @@ jobs:
       # PUBLICAR JUNIT Y FAILSAFE
       - name: Publicar resultados JUnit y Failsafe
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: resultados-junit-failsafe
           path: |
@@ -270,7 +270,7 @@ jobs:
       # PUBLICAR JACOCO
       - name: Publicar informe JaCoCo
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-jacoco
           path: target/site/jacoco/
@@ -280,7 +280,7 @@ jobs:
       # PUBLICAR INFORME PIT
       - name: Publicar informe PIT Mutation Testing
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-pit-mutation-testing
           path: target/pit-reports/
@@ -290,7 +290,7 @@ jobs:
       # PUBLICAR CHECKSTYLE
       - name: Publicar informe Checkstyle
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-checkstyle
           path: |
@@ -302,7 +302,7 @@ jobs:
       # PUBLICAR SPOTBUGS
       - name: Publicar informe SpotBugs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-spotbugs
           path: |
@@ -314,7 +314,7 @@ jobs:
       # PUBLICAR INFORME OWASP
       - name: Publicar informe OWASP Dependency-Check
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-owasp-dependency-check
           path: target/dependency-check-report.html
@@ -324,7 +324,7 @@ jobs:
       # PUBLICAR JAR
       - name: Publicar JAR
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: proyecto-java-jar
           path: target/*.jar
@@ -334,7 +334,7 @@ jobs:
       # PUBLICAR SBOM CYCLONEDX
       - name: Publicar SBOM CycloneDX
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sbom-cyclonedx
           path: |
@@ -346,7 +346,7 @@ jobs:
       # PUBLICAR REGISTRO DE EJECUCION
       - name: Publicar registro Maven
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: registro-maven
           path: target/
@@ -356,7 +356,7 @@ jobs:
       # PUBLICAR INFORME PIT
       - name: Publicar informe PIT Mutation Testing
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-pit
           path: target/pit-reports/
@@ -366,7 +366,7 @@ jobs:
       # PUBLICAR INFORME TRIVY
       - name: Publicar informe Trivy
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-trivy
           path: security-reports/trivy/trivy.json
@@ -376,7 +376,7 @@ jobs:
       # PUBLICAR INFORME GITLEAKS
       - name: Publicar informe Gitleaks
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-gitleaks
           path: security-reports/gitleaks/gitleaks.json
@@ -408,7 +408,7 @@ jobs:
           publish_results: false
 
       - name: Publicar resultados SARIF
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: resultados-openssf-scorecard
           path: results.sarif
