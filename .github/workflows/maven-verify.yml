@@ -28,6 +28,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      # PREPARAR ESTRUCTURA DE INFORMES DE SEGURIDAD
+      - name: Preparar directorios de informes
+        if: always()
+        run: |
+          mkdir -p security-reports/gitleaks
+          mkdir -p security-reports/semgrep
+          mkdir -p security-reports/trivy
+          mkdir -p security-reports/codeql
+          mkdir -p security-reports/dependency-check
+          mkdir -p security-reports/zap
+          mkdir -p security-reports/sbom
+          mkdir -p security-reports/sonarqube
+          mkdir -p security-reports/spotbugs
+
       # ANALIZAR SECRETOS CON GITLEAKS
       - name: Analizar secretos con Gitleaks
         uses: gitleaks/gitleaks-action@v3
@@ -35,12 +49,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ANALIZAR CODIGO CON SEMGREP
+      - name: Instalar Semgrep
+        if: always()
+        run: pip install semgrep
+
       - name: Analizar código con Semgrep
         if: always()
         continue-on-error: true
-        uses: docker://semgrep/semgrep
+        run: |
+          semgrep scan \
+            --config auto \
+            --json \
+            --output security-reports/semgrep/semgrep.json
+
+      # PUBLICAR INFORME SEMGREP
+      - name: Publicar informe Semgrep
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          args: semgrep scan --config auto
+          name: informe-semgrep
+          path: security-reports/semgrep/semgrep.json
+          if-no-files-found: warn
+          retention-days: 30
 
       # ANALIZAR SEGURIDAD CON TRIVY
       - name: Analizar proyecto con Trivy
