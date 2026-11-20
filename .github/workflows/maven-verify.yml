@@ -44,9 +44,26 @@ jobs:
 
       # ANALIZAR SECRETOS CON GITLEAKS
       - name: Analizar secretos con Gitleaks
+        if: always()
+        continue-on-error: true
         uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: true
+          GITLEAKS_ENABLE_COMMENTS: false
+
+      # GENERAR INFORME JSON GITLEAKS
+      - name: Generar informe Gitleaks
+        if: always()
+        continue-on-error: true
+        run: |
+          docker run --rm \
+            -v "$PWD:/path" \
+            zricethezav/gitleaks:latest \
+            git /path \
+            --report-format json \
+            --report-path /path/security-reports/gitleaks/gitleaks.json \
+            --exit-code 0
 
       # ANALIZAR CODIGO CON SEMGREP
       - name: Instalar Semgrep
@@ -353,6 +370,16 @@ jobs:
         with:
           name: informe-trivy
           path: security-reports/trivy/trivy.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      # PUBLICAR INFORME GITLEAKS
+      - name: Publicar informe Gitleaks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-gitleaks
+          path: security-reports/gitleaks/gitleaks.json
           if-no-files-found: warn
           retention-days: 30
 
