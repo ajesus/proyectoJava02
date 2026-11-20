@@ -81,7 +81,8 @@ jobs:
           scan-type: 'fs'
           scan-ref: '.'
           scanners: 'vuln,misconfig,secret'
-          format: 'table'
+          format: 'json'
+          output: 'security-reports/trivy/trivy.json'
           exit-code: '0'
 
       # INICIALIZAR CODEQL
@@ -342,6 +343,16 @@ jobs:
         with:
           name: informe-pit
           path: target/pit-reports/
+          if-no-files-found: warn
+          retention-days: 30
+
+      # PUBLICAR INFORME TRIVY
+      - name: Publicar informe Trivy
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-trivy
+          path: security-reports/trivy/trivy.json
           if-no-files-found: warn
           retention-days: 30
 
