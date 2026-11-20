@@ -118,7 +118,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '8'
+          java-version: '25'
           cache: maven
 
       # LIMPIAR PROYECTO
@@ -217,7 +217,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
 
       # ANALIZAR CON SONARQUBE CLOUD
       - name: Analizar código con SonarQube Cloud
